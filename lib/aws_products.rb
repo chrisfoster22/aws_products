@@ -1,4 +1,4 @@
-require "./aws_products/version"
+require "aws_products/version"
 require "time"
 require "uri"
 require 'base64'
@@ -13,7 +13,7 @@ module AwsProducts
 
     def self.search(keywords, options = {})
 
-        aws_secret_key = ENV["AWS_SECRET_ACCESS_KEY"] || options[:aws_secret_key]
+      aws_secret_key = ENV["AWS_SECRET_ACCESS_KEY"] || options[:aws_secret_key]
 
       params = {
         "Service" => "AWSECommerceService",
@@ -21,13 +21,14 @@ module AwsProducts
         "AWSAccessKeyId" => ENV["AWS_ACCESS_KEY_ID"] || options[:aws_access_key_id],
         "AssociateTag" => ENV["AWS_ASSOCIATE_TAG"] || options[:associate_tag],
         "Keywords" => keywords,
-        "SearchIndex" => options[:category]|| "",
+        "SearchIndex" => options[:category]|| "All",
         "ItemPage" => options[:page] || "1",
         "ResponseGroup" => options[:response_group] || "Images,ItemAttributes,Offers"
       }
 
-      self.generate_request_url(params, aws_secret_key)
-  end
+      url = self.generate_request_url(params, aws_secret_key)
+      self.get_results(url)
+   end
 
   def self.generate_request_url(params, secret)
 
@@ -45,13 +46,11 @@ module AwsProducts
 
         # Generate the signed URL
         request_url = "http://#{ENDPOINT}#{REQUEST_URI}?#{canonical_query_string}&Signature=#{URI.escape(signature, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
-
-        self.get_results(request_url)
     end
 
     def self.get_results(url)
         results = HTTParty.get(url)
-        results["ItemSearchResponse"]["Items"]["Item"]
+        results["ItemSearchResponse"]["Items"]["Item"] if results["ItemSearchResponse"]["Items"]["Item"]
     end
 
 end
