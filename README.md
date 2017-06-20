@@ -30,7 +30,11 @@ AWS_ACCESS_KEY_ID
 AWS_ASSOCIATE_TAG
 ```
 
-This is not a necessary step, but eliminates the need to manually pass them into the search method.
+This is not a necessary step, but eliminates the need to manually pass them into the search method. If you do not have these environment variables, you will need to pass in your keys like so: 
+
+```ruby
+AwsProducts.search(keyword, aws_secret_access_key: "2293r0q43j0923429", aws_access_key_id: "23r94r439i2", aws_associate_tag: "my-cool-site-20")
+```
 
 You can then use the search like this: 
 
